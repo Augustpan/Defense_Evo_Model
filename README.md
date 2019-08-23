@@ -1,2 +1,5 @@
 # Defense_Evo_Model
-Script and code for Pan and Pan 2019
+
+This repository contain script and code for manuscript "Herbivore pressure and community composition interact to predict intraspecific variation in plant defense".
+
+Any questions email yfpan16@fudan.edu.cn
