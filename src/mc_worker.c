@@ -1,14 +1,19 @@
+/**
+ * @file mc_worker.c
+ * @brief code for "Predicting intraspecific variation in plant defense" in Method section
+ * @author Yuanfei Pan
+ * @email yfpan16@fudan.edu.cn
+ * @date 2019.08.25
+ * @license MIT
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#include "utils.c"
-
-#define A_SIZE 20
-#define B_SIZE 20
-#define C_SIZE 10
-#define L_SIZE 20
+#include "utils.h"
+#include "define.h"
 
 int main(int argc, char *argv[])
 {
@@ -102,6 +107,7 @@ int main(int argc, char *argv[])
     // write the header of output .csv file
     fprintf(fp, "a,b,c,l,accu_a,slope_a,accu_b,slope_b,accu_c,slope_c\n");
 
+    // for each parameter setting
     for (int aind = shift[0]; aind < shift[0] + length[0]; ++aind)
     {
         for (int bind = shift[1]; bind < shift[1] + length[1]; ++bind)

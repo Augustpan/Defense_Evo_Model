@@ -1,17 +1,20 @@
+/**
+ * @file od_worker.c
+ * @brief code for "Solving for optimal defense level" in Method section
+ * @author Yuanfei Pan
+ * @email yfpan16@fudan.edu.cn
+ * @date 2019.08.25
+ * @license MIT
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#include "model.c"
-
-#define A_SIZE 20
-#define B_SIZE 30
-#define C_SIZE 10
-#define H_SIZE 20
-#define P_SIZE 10
-#define L_SIZE 20
-#define X_SIZE 1000
+#include "model.h"
+#include "utils.h"
+#include "define.h"
 
 int main(int argc, char* argv[])
 {
@@ -97,6 +100,7 @@ int main(int argc, char* argv[])
     // write the header of output .csv file
     fprintf(fp, "h,p,a,b,c,l\n");
     
+    // for each parameter settings
     for (int aind = shift[0]; aind < shift[0]+length[0]; ++aind)
     {
         for (int bind = shift[1]; bind < shift[1]+length[1]; ++bind)

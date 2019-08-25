@@ -1,25 +1,77 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+/**
+ * @file utils.c
+ * @brief here I defined some utility functions
+ * @author Yuanfei Pan
+ * @email yfpan16@fudan.edu.cn
+ * @date 2019.08.25
+ * @license MIT
+ */
 
-#include "model.c"
+#include "utils.h"
 
-#define bool int
-#define false 0
-#define true 1
+/**
+ * @brief an implementation for function `numpy.linspace(...)` in Python package numpy
+ *
+ * @param arr input array
+ * @param start smallest element in the desired array
+ * @param end largest element in the desired array
+ * @param size length of the input array
+ *
+ * @return void
+ */
+void linspace(float *arr, float start, float end, int size)
+{
+    float interval = (end - start) / (size - 1);
+    arr[0] = start;
+    for (int i = 1; i < size; ++i)
+        arr[i] = arr[i - 1] + interval;
+}
 
-#define H_SIZE 20
-#define P_SIZE 10
-#define X_SIZE 1000
-#define SAMPLE_SIZE 10000
-#define SLOPE_SIZE 200
+/**
+ * @brief an implementation for function `numpy.argmax(...)` in Python package numpy
+ *
+ * @param arr input array
+ * @param size length of the input array
+ *
+ * @return int
+ * @retval ind_max index of the largest element in the input array
+ */
+int argmax(const float *arr, int size)
+{
+    float val_max = arr[0];
+    int ind_max = 0;
+    
+    for (int i = 1; i < size; ++i)
+    {
+        if (arr[i] > val_max)
+        {
+            val_max = arr[i];
+            ind_max = i;
+        }
+    }
+    return ind_max;
+}
 
-// generate random int in range [0, m)
+/**
+ * @brief generate random integer in range [0, maxval)
+ *
+ * @param maxval just as its name suggests
+ *
+ * @return int
+ */
 int randint(int maxval)
 {
     return rand() % maxval;
 }
 
+/**
+ * @brief a function to calculate partial differentrial along the second axis of a 2D matrix
+ *
+ * @param diff[H_SIZE][P_SIZE] output maxtrix
+ * @param mat[H_SIZE][P_SIZE] input maxtrix
+ *
+ * @return void
+ */
 void differentiate(float diff[H_SIZE][P_SIZE], const float mat[H_SIZE][P_SIZE])
 {
     for (int hind = 0; hind < H_SIZE; ++hind)
@@ -32,6 +84,20 @@ void differentiate(float diff[H_SIZE][P_SIZE], const float mat[H_SIZE][P_SIZE])
     }
 }
 
+/**
+ * @brief calculate optimal surface, see Figure 1
+ *
+ * @param mat[H_SIZE][P_SIZE] output maxtrix of optimal surface
+ * @param hrng range of parameter H_0
+ * @param prng range of parameter p
+ * @param x defense level \gamma
+ * @param xa \gamma^a, see function void model(...) in model.c
+ * @param xb \gamma^b, see function void model(...) in model.c
+ * @param c parameter c
+ * @param l parameter \lambda
+ *
+ * @return void
+ */
 void optimal_surface(float mat[H_SIZE][P_SIZE], const float* hrng, const float* prng, const float* x, const float* xa, const float* xb, float c, float l)
 {
     float fitness[X_SIZE];
@@ -52,6 +118,19 @@ void optimal_surface(float mat[H_SIZE][P_SIZE], const float* hrng, const float* 
     }
 }
 
+/**
+ * @brief calculate optimal surface, see Figure 1
+ *
+ * @param hsam storing the \Delta H_0 value of each simulation
+ * @param psam storing the \Delta p value of each simulation
+ * @param dsam storing the \Delta \gamma^* (optimal defense level) value of each simulation
+ * @param scenario storing the scenario info of each simulation. Scenario A, B, C corespond to 0, 1, 2 repectively. See Figure 2
+ * @param mat[H_SIZE][P_SIZE] partial differential with respect to p
+ * @param hrng range of parameter H_0
+ * @param prng range of parameter p
+ *
+ * @return void
+ */
 void monte_carlo(float* hsam, float* psam, int* dsam, int* scenario, const float mat[H_SIZE][P_SIZE], const float diff[H_SIZE][P_SIZE], const float* hrng, const float* prng)
 {
     float delta_defense;
@@ -84,6 +163,18 @@ void monte_carlo(float* hsam, float* psam, int* dsam, int* scenario, const float
     }
 }
 
+/**
+ * @brief a function to evaluate whether the \Delta H_0 - \Delta p surface can be divided by a incline line into two sections to make a good prediction on the change in defense level. see Figure 2
+ *
+ * @param result storing the accuracy of prediction and the slope of the demarcation line of the best predictive power
+ * @param hsam storing the \Delta H_0 value of each simulation
+ * @param psam storing the \Delta p value of each simulation
+ * @param dsam storing the \Delta \gamma^* (optimal defense level) value of each simulation
+ * @param scenario storing the scenario info of each simulation. Scenario A, B, C corespond to 0, 1, 2 repectively. See Figure 2
+ * @param slope storing the candidates of slope of demarcation line, to accelerate calculation
+ *
+ * @return void
+ */
 void eval(float* result, const float* hsam, const float* psam, const int* dsam, const int* scenario, const float* slope)
 {
     float predicter;
